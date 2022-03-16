@@ -1,8 +1,9 @@
-package main
+package bkp
 
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 
 	//"github.com/gin-gonic/gin"
 	"go.m3o.com/db"
@@ -11,16 +12,55 @@ import (
 	//"strconv"
 )
 
-// getAlbums responds with the list of all albums as JSON.
-func getAlbums(c *gin.Context) {
+func initDb(c *gin.Context) {
 	dbService := db.NewDbService(os.Getenv("M3O_API_TOKEN"))
-	albums, err := dbService.Read(&db.ReadRequest{
+	dbService.DropTable(&db.DropTableRequest{
+		Table: "albums",
+	})
+	//if err != nil {
+	//	c.IndentedJSON(http.StatusNotFound, gin.H{"message": err})
+	//}
+
+	time.Sleep(3)
+
+	_, err := dbService.Create(&db.CreateRequest{
+		Record: map[string]interface{}{
+			"Id":      "1",
+			"Title":   "Blue Train",
+			"Artiste": "John Coltrane",
+			"Price":   "56.99",
+		},
 		Table: "albums",
 	})
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err})
 	}
-	c.IndentedJSON(http.StatusOK, albums.Records)
+
+	_, err = dbService.Create(&db.CreateRequest{
+		Record: map[string]interface{}{
+			"Id":      "2",
+			"Title":   "Jeru",
+			"Artiste": "Gerry Mulligan",
+			"Price":   "17.99",
+		},
+		Table: "albums",
+	})
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err})
+	}
+
+	_, err = dbService.Create(&db.CreateRequest{
+		Record: map[string]interface{}{
+			"Id":      "3",
+			"Title":   "Sarah Vaughan and Clifford Brown",
+			"Artiste": "Sarah Vaughan",
+			"Price":   "39.99",
+		},
+		Table: "albums",
+	})
+	if err != nil {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err})
+	}
 }
 
 /*
