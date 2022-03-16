@@ -1,10 +1,8 @@
-package bkp
+package functions
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"fmt"
 	"time"
-
 	//"github.com/gin-gonic/gin"
 	"go.m3o.com/db"
 	//"net/http"
@@ -12,7 +10,7 @@ import (
 	//"strconv"
 )
 
-func initDb(c *gin.Context) {
+func initDb() {
 	dbService := db.NewDbService(os.Getenv("M3O_API_TOKEN"))
 	dbService.DropTable(&db.DropTableRequest{
 		Table: "albums",
@@ -33,7 +31,7 @@ func initDb(c *gin.Context) {
 		Table: "albums",
 	})
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err})
+		fmt.Println(err)
 	}
 
 	_, err = dbService.Create(&db.CreateRequest{
@@ -46,7 +44,7 @@ func initDb(c *gin.Context) {
 		Table: "albums",
 	})
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err})
+		fmt.Println(err)
 	}
 
 	_, err = dbService.Create(&db.CreateRequest{
@@ -59,7 +57,7 @@ func initDb(c *gin.Context) {
 		Table: "albums",
 	})
 	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err})
+		fmt.Println(err)
 	}
 }
 
