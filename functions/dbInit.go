@@ -2,7 +2,6 @@ package functions
 
 import (
 	"fmt"
-	"time"
 	//"github.com/gin-gonic/gin"
 	"go.m3o.com/db"
 	//"net/http"
@@ -10,17 +9,8 @@ import (
 	//"strconv"
 )
 
-func initDb() {
+func InitDb() {
 	dbService := db.NewDbService(os.Getenv("M3O_API_TOKEN"))
-	dbService.DropTable(&db.DropTableRequest{
-		Table: "albums",
-	})
-	//if err != nil {
-	//	c.IndentedJSON(http.StatusNotFound, gin.H{"message": err})
-	//}
-
-	time.Sleep(3)
-
 	_, err := dbService.Create(&db.CreateRequest{
 		Record: map[string]interface{}{
 			"Id":      "1",
