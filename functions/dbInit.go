@@ -1,106 +1,57 @@
-package functions
+package example
 
 import (
-	"fmt"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
-
-	//"github.com/gin-gonic/gin"
-	"go.m3o.com/db"
-	//"net/http"
-	"os"
-	//"strconv"
 )
 
-func InitDb(w http.ResponseWriter, r *http.Request) {
-	dbService := db.NewDbService(os.Getenv("M3O_API_TOKEN"))
-	_, err := dbService.Create(&db.CreateRequest{
-		Record: map[string]interface{}{
-			"Id":      "1",
-			"Title":   "Blue Train",
-			"Artiste": "John Coltrane",
-			"Price":   "56.99",
-		},
-		Table: "albums",
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	_, err = dbService.Create(&db.CreateRequest{
-		Record: map[string]interface{}{
-			"Id":      "2",
-			"Title":   "Jeru",
-			"Artiste": "Gerry Mulligan",
-			"Price":   "17.99",
-		},
-		Table: "albums",
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	_, err = dbService.Create(&db.CreateRequest{
-		Record: map[string]interface{}{
-			"Id":      "3",
-			"Title":   "Sarah Vaughan and Clifford Brown",
-			"Artiste": "Sarah Vaughan",
-			"Price":   "39.99",
-		},
-		Table: "albums",
-	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	w.Write([]byte("OK"))
+type request struct {
+	Name string `json:"name"`
 }
 
-/*
-// postAlbums adds an album from JSON received in the request body.
-func postAlbums(c *gin.Context) {
-	var newAlbum album
+type response struct {
+	Message string `json:"message"`
+}
 
-	// Call BindJSON to bind the received JSON to
-	// newAlbum.
-	if err := c.BindJSON(&newAlbum); err != nil {
+func Helloworld(w http.ResponseWriter, r *http.Request) {
+	message := "Hello world!"
+
+	ct := r.Header.Get("Content-Type")
+
+	if ct == "application/json" {
+		b, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(500)
+			return
+		}
+
+		var req request
+
+		if err := json.Unmarshal(b, &req); err != nil {
+			w.WriteHeader(500)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		if len(req.Name) > 0 {
+			message = "Hello " + req.Name + "!"
+		}
+
+		if err := json.NewEncoder(w).Encode(response{Message: message}); err != nil {
+			w.WriteHeader(500)
+			return
+		}
+
 		return
 	}
 
-	// Add the new album to the slice.
-	albums = append(albums, newAlbum)
-	c.IndentedJSON(http.StatusCreated, newAlbum)
-}
+	r.ParseForm()
+	name := r.Form.Get("name")
 
-// getAlbumByID locates the album whose ID value matches the id
-// parameter sent by the client, then returns that album as a response.
-func getAlbumByID(c *gin.Context) {
-	id := c.Param("id")
-
-	// Loop through the list of albums, looking for
-	// an album whose ID value matches the parameter.
-	for _, a := range albums {
-		if a.ID == id {
-			c.IndentedJSON(http.StatusOK, a)
-			return
-		}
-	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
-}
-
-func GetUserbyId(id int) {
-	dbService := db.NewDbService(os.Getenv("M3O_API_TOKEN"))
-	query := "id == " + strconv.Itoa(id)
-	record, err := dbService.Read(&db.ReadRequest{
-		Query: query,
-		Table: "tdb",
-	})
-
-	if err != nil {
-		fmt.Println(err)
+	if len(name) > 0 {
+		message = "Hello " + name + "!"
 	}
 
-	fmt.Println(record.Records)
+	w.Write([]byte(message))
 }
-
-
-*/
