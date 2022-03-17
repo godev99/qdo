@@ -9,7 +9,7 @@ import (
 func Helloworld(w http.ResponseWriter, r *http.Request) {
 	message := "Hello world!"
 
-	token := "MWYyOGFlMTEtZDk2Yy00YTliLTkzMDgtNzQyNzA1YzNmMjZk"
+	token := "XXX"
 
 	dbService := db.NewDbService(token)
 	_, err := dbService.Create(&db.CreateRequest{
