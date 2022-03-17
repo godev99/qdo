@@ -2,6 +2,8 @@ package functions
 
 import (
 	"fmt"
+	"net/http"
+
 	//"github.com/gin-gonic/gin"
 	"go.m3o.com/db"
 	//"net/http"
@@ -9,7 +11,7 @@ import (
 	//"strconv"
 )
 
-func InitDb() {
+func InitDb(w http.ResponseWriter, r *http.Request) {
 	dbService := db.NewDbService(os.Getenv("M3O_API_TOKEN"))
 	_, err := dbService.Create(&db.CreateRequest{
 		Record: map[string]interface{}{
@@ -49,6 +51,8 @@ func InitDb() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	w.Write([]byte("OK"))
 }
 
 /*
